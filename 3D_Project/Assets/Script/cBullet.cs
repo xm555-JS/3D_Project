@@ -6,10 +6,11 @@ public class cBullet : MonoBehaviour
 {
     public int damage;
     public bool isMelee;
+    public bool isRock;
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Floor"))
+        if (!isRock && collision.gameObject.CompareTag("Floor"))
             Destroy(gameObject, 3f);
     }
 

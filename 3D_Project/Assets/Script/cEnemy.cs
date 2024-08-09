@@ -12,23 +12,28 @@ public abstract class cEnemy : MonoBehaviour
     protected Transform target;
     protected bool isChase;
     protected bool isAttack;
+    protected bool isDead;
 
-    //public BoxCollider meleeArea;
     protected Rigidbody rigid;
     protected BoxCollider boxCollider;
-    protected Material material;
+    protected MeshRenderer[] materials;
     protected NavMeshAgent nav;
     protected Animator anim;
 
     protected void Awake()
     {
-        rigid = GetComponent<Rigidbody>();
-        boxCollider = GetComponent<BoxCollider>();
-        material = GetComponentInChildren<MeshRenderer>().material;
-        nav = GetComponent<NavMeshAgent>();
-        anim = GetComponentInChildren<Animator>();
+        Initialize();
 
         Invoke("Chase", 2f);
+    }
+
+    protected void Initialize()
+    {
+        rigid = GetComponent<Rigidbody>();
+        boxCollider = GetComponent<BoxCollider>();
+        materials = GetComponentsInChildren<MeshRenderer>();
+        nav = GetComponent<NavMeshAgent>();
+        anim = GetComponentInChildren<Animator>();
     }
 
     protected void Start()
@@ -37,8 +42,14 @@ public abstract class cEnemy : MonoBehaviour
         target = player.GetComponent<Transform>();
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
+        if (isDead)
+        {
+            StopAllCoroutines();
+            return;
+        }
+
         if (nav.enabled)
         {
             nav.SetDestination(target.position);
@@ -54,8 +65,9 @@ public abstract class cEnemy : MonoBehaviour
 
     void Targetting()
     {
-        //float radius = 1.5f;
-        //float range = 2f;
+        if (isDead)
+            return;
+
         RaycastHit[] hits = Physics.SphereCastAll(this.transform.position, radius, transform.forward, range, LayerMask.GetMask("Player"));
 
         if (hits.Length > 0 && !isAttack)
@@ -96,7 +108,9 @@ public abstract class cEnemy : MonoBehaviour
 
     IEnumerator Hit(Vector3 dir, bool isGrenade = false)
     {
-        material.color = Color.red;
+        foreach (MeshRenderer mesh in materials)
+            mesh.material.color = Color.red;
+
         yield return new WaitForSeconds(0.1f);
 
         if (!isGrenade)
@@ -105,11 +119,17 @@ public abstract class cEnemy : MonoBehaviour
             rigid.AddForce(dir.normalized * 10f, ForceMode.Impulse);
 
         if (curHealth > 0f)
-            material.color = Color.white;
+        {
+            foreach (MeshRenderer mesh in materials)
+                mesh.material.color = Color.white;
+        }
         else
         {
-            material.color = Color.gray;
+            foreach (MeshRenderer mesh in materials)
+                mesh.material.color = Color.gray;
+
             gameObject.layer = 12;
+            isDead = true;
 
             anim.SetTrigger("doDie");
             isChase = false;

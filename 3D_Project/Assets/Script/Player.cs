@@ -67,6 +67,8 @@ public class Player : MonoBehaviour
     int weaponIndex;
     int preWeaponIndex;
 
+    public Vector3 GetPlayerDir() { return moveDir; }
+
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -149,9 +151,12 @@ public class Player : MonoBehaviour
         }
         if (other.gameObject.CompareTag("EnemyBullet"))
         {
-            cBullet enemyBullet = other.GetComponent<cBullet>();
-            health -= enemyBullet.damage;
-            StartCoroutine("OnDamage");
+            if (!isDamage)
+            {
+                cBullet enemyBullet = other.GetComponent<cBullet>();
+                health -= enemyBullet.damage;
+                StartCoroutine("OnDamage");
+            }
 
             if (other.GetComponent<Rigidbody>() != null)
                 Destroy(other.gameObject);

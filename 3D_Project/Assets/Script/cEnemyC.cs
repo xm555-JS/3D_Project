@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 #pragma warning disable 0108
+#pragma warning disable 0114
 
 public class cEnemyC : cEnemy
 {
