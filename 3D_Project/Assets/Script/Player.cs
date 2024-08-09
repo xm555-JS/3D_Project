@@ -2,18 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+#pragma warning disable 0414
+
 public class Player : MonoBehaviour
 {
-    [Header ("[Component]")]
+    [Header("[Component]")]
     Rigidbody rigid;
     Animator anim;
+    MeshRenderer[] meshRenderders;
 
     [Header("[PlayerInfo]")]
+    public Camera followCamere;
     public GameObject[] grenades;
     public int ammo;
     public int coin;
     public int health;
     public int hasGrenades;
+    bool isDamage;
 
     [Header("[PlayerInfo_Max]")]
     public int maxAmmo;
@@ -24,27 +29,41 @@ public class Player : MonoBehaviour
     [Header("[Move]")]
     public float speed;
     public float jumpPower;
+
     float hAxis;
     float vAxis;
     float defaultSpeed;
+
     Vector3 moveDir;
+    Vector3 inputVec;
     Vector3 dodgeDir;
+
     bool isDown;
     bool isJump;
     bool isAir;
     bool isDodge;
     bool isRoll;
 
+    bool isBorder;
+
     [Header("[Weapon]")]
     public GameObject[] weapons;
     public bool[] hasWeapon;
+    public GameObject grenadeObj;
     cWeapon curWeapon;
     GameObject nearObject;
+
     bool isWeaponTrigger;
     bool isSwap;
     bool isFire;
     bool isFireReady = true;
+    bool isReload;
+    bool isLoading;
+    bool isGrenade;
+    bool isThrow;
+
     float fireDelay;
+
     int weaponIndex;
     int preWeaponIndex;
 
@@ -52,6 +71,7 @@ public class Player : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+        meshRenderders = GetComponentsInChildren<MeshRenderer>();
     }
 
     void Start()
@@ -67,6 +87,8 @@ public class Player : MonoBehaviour
         Turn();
         Jump();
         Attack();
+        Grenade();
+        Reload();
         Dodge();
         Interection();
         Swap();
@@ -75,6 +97,8 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         Move();
+        FreezeRotation();
+        StopToWall();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -88,6 +112,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.name);
         if (other.gameObject.CompareTag("Item"))
         {
             cItem item = other.GetComponent<cItem>();
@@ -122,6 +147,15 @@ public class Player : MonoBehaviour
 
             Destroy(other.gameObject);
         }
+        if (other.gameObject.CompareTag("EnemyBullet"))
+        {
+            cBullet enemyBullet = other.GetComponent<cBullet>();
+            health -= enemyBullet.damage;
+            StartCoroutine("OnDamage");
+
+            if (other.GetComponent<Rigidbody>() != null)
+                Destroy(other.gameObject);
+        }
     }
 
     void OnTriggerStay(Collider other)
@@ -136,13 +170,44 @@ public class Player : MonoBehaviour
             nearObject = null;
     }
 
+    IEnumerator OnDamage()
+    {
+        isDamage = true;
+
+        foreach (MeshRenderer meshRenderer in meshRenderders)
+        {
+            meshRenderer.material.color = Color.yellow;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        isDamage = false;
+        foreach (MeshRenderer meshRenderer in meshRenderders)
+        {
+            meshRenderer.material.color = Color.white;
+        }
+    }
+
+    void FreezeRotation()
+    {
+        rigid.angularVelocity = Vector3.zero;
+    }
+
+    void StopToWall()
+    {
+        Debug.DrawRay(transform.position, transform.forward * 5f, Color.green);
+        isBorder = Physics.Raycast(transform.position, transform.forward, 5f, LayerMask.GetMask("Wall"));
+    }
+
     void GetInput()
     {
         hAxis = Input.GetAxisRaw("Horizontal");
         vAxis = Input.GetAxisRaw("Vertical");
         isDown = Input.GetButton("Walk");
         isJump = Input.GetButtonDown("Jump");
-        isFire = Input.GetButtonDown("Fire1");
+        isFire = Input.GetButton("Fire1");
+        isGrenade = Input.GetButton("Fire2");
+        isReload = Input.GetButtonDown("Reload");
         isDodge = Input.GetButtonDown("Dodge");
         isWeaponTrigger = Input.GetButtonDown("Interection");
     }
@@ -155,7 +220,7 @@ public class Player : MonoBehaviour
         // 회피할 때 dir 고정
         if (isRoll)
             moveDir = dodgeDir;
-        if (isSwap || !isFireReady)
+        if (isSwap || !isFireReady || isLoading)
             moveDir = Vector3.zero;
 
         // 애니메이션
@@ -167,6 +232,19 @@ public class Player : MonoBehaviour
     {
         // 회전
         transform.LookAt(transform.position + moveDir);
+
+        // 마우스 회전
+        if (isFire)
+        {
+            Ray ray = followCamere.ScreenPointToRay(Input.mousePosition);
+            RaycastHit rayHit;
+            if (Physics.Raycast(ray, out rayHit, 100))
+            {
+                Vector3 moveDir = rayHit.point - transform.position;
+                moveDir.y = 0f;
+                transform.LookAt(transform.position + moveDir);
+            }
+        }
     }
 
     void Move()
@@ -174,8 +252,11 @@ public class Player : MonoBehaviour
         // rigidybody를 이용한 플레이어 이동
         // Rigidbody를 이용하여 플레이어를 움직이게 바꿈
         // FixedUpdate에서 처리함으로 같은 프레임률에서 충돌을 처리할 수 있어 안전하게 물리 상호작용이 가능
-        Vector3 InputVec = moveDir * speed * (isDown ? 0.3f : 1f) * Time.deltaTime;
-        rigid.MovePosition(rigid.position + InputVec);
+        if (!isBorder)
+        {
+            inputVec = moveDir * speed * (isDown ? 0.3f : 1f) * Time.deltaTime;
+            rigid.MovePosition(rigid.position + inputVec);
+        }
     }
 
     void Jump()
@@ -286,9 +367,69 @@ public class Player : MonoBehaviour
         if (isFire && isFireReady && !isDodge && !isSwap)
         {
             curWeapon.Use();
-            anim.SetTrigger("doSwing");
+
+            if (curWeapon.type == cWeapon.Type.MELEE)
+                anim.SetTrigger("doSwing");
+            else
+                anim.SetTrigger("doShot");
+
             fireDelay = 0f;
             isFireReady = false;
         }
+    }
+
+    void Grenade()
+    {
+        if (hasGrenades == 0)
+            return;
+
+        if (isGrenade && !isLoading && !isSwap)
+        {
+            RaycastHit hit;
+            // 결과 광선은 월드 공간에 있으며, 카메라의 근거리 평면에서 시작하여 화면의 위치(x,y) 픽셀 좌표를 통과합니다
+            // 화면 공간은 픽셀로 정의됩니다. 화면의 왼쪽 하단은 (0,0)이고 오른쪽 상단은 ( pixelWidth -1, pixelHeight -1)입니다.
+            Ray ray = followCamere.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit, 100f))
+            {
+                Vector3 moveDir = hit.transform.position - this.transform.position;
+                moveDir.y = 10f;
+
+                GameObject grenade = Instantiate(grenadeObj, this.transform.position, this.transform.rotation);
+                Rigidbody grenadeRigid = grenade.GetComponent<Rigidbody>();
+                grenadeRigid.AddForce(moveDir, ForceMode.Impulse);
+                //grenadeRigid.AddForce(Vector3.back * 10f, ForceMode.Impulse);
+
+                hasGrenades--;
+                grenades[hasGrenades].SetActive(false);
+            }
+        }
+    }
+
+    void Reload()
+    {
+        if (curWeapon == null)
+            return;
+
+        if (curWeapon.type == cWeapon.Type.MELEE)
+            return;
+
+        if (ammo == 0)
+            return;
+
+
+        if (isReload && !isJump && !isDodge && !isSwap && isFireReady)
+        {
+            isLoading = true;
+            anim.SetTrigger("doReload");
+            Invoke("FinishReload", 3f);
+        }
+    }
+
+    void FinishReload()
+    {
+        curWeapon.curAmmo = curWeapon.maxAmmo;
+        ammo -= curWeapon.maxAmmo;
+        isLoading = false;
     }
 }
