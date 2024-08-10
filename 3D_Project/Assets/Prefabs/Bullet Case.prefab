@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2282029468898532679}
   - component: {fileID: 8036950146212358616}
   - component: {fileID: 8911765242265847067}
+  - component: {fileID: 1456925997985395758}
   m_Layer: 9
   m_Name: Bullet Case
   m_TagString: Untagged
@@ -63,6 +64,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+  isMelee: 0
+  isRock: 0
+--- !u!65 &1456925997985395758
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1504401401199708157}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9112130003444053638
 GameObject:
   m_ObjectHideFlags: 0

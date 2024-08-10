@@ -7,16 +7,12 @@ using UnityEngine;
 
 public class cEnemyB : cEnemy
 {
-    public int maxHealthB;
-    public int curHealthB;
     public BoxCollider meleeArea;
 
     float rushPower = 20f;
 
     void Awake()
     {
-        maxHealth = maxHealthB;
-        curHealth = curHealthB;
         radius = 1f;
         range = 15f;
         base.Awake();
@@ -56,5 +52,14 @@ public class cEnemyB : cEnemy
         isAttack = false;
         isChase = true;
         anim.SetBool("isAttack", isAttack);
+    }
+
+    protected override void DeadCount()
+    {
+        if (curHealth <= 0)
+        {
+            Debug.Log("B ¾Ë¸²");
+            manager.enemyCountB--;
+        }
     }
 }

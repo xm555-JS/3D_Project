@@ -7,16 +7,12 @@ using UnityEngine;
 
 public class cEnemyC : cEnemy
 {
-    public int maxHealthC;
-    public int curHealthC;
     public GameObject bullet;
 
     float shotPower = 20f;
 
     void Awake()
     {
-        maxHealth = maxHealthC;
-        curHealth = curHealthC;
         radius = 0.5f;
         range = 25f;
         base.Awake();
@@ -53,5 +49,14 @@ public class cEnemyC : cEnemy
         isAttack = false;
         isChase = true;
         anim.SetBool("isAttack", isAttack);
+    }
+
+    protected override void DeadCount()
+    {
+        if (curHealth <= 0)
+        {
+            Debug.Log("C ¾Ë¸²");
+            manager.enemyCountC--;
+        }
     }
 }

@@ -61,7 +61,8 @@ public class cWeapon : MonoBehaviour
         // ÅºÇÇ º¹»ç
         GameObject _bulletCase = Instantiate(bulletCase, bulletCasePos.position, bulletCasePos.rotation);
         Rigidbody rigidCase = _bulletCase.GetComponent<Rigidbody>();
-        rigidCase.AddForce(_bulletCase.transform.forward, ForceMode.Impulse);
+        Vector3 caseVec = bulletCasePos.forward * Random.Range(-3f, -2f) + Vector3.up * Random.Range(2f, 3f);
+        rigidCase.AddForce(caseVec, ForceMode.Impulse);
         rigidCase.AddTorque(Vector3.up * 50f, ForceMode.Impulse);
     }
 }

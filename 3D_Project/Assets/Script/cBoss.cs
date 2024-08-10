@@ -7,9 +7,6 @@ using UnityEngine;
 
 public class cBoss : cEnemy
 {
-    public int maxHealthBoss;
-    public int curHealthBoss;
-
     public GameObject missilePortA;
     public GameObject missilePortB;
     public GameObject missile;
@@ -23,8 +20,6 @@ public class cBoss : cEnemy
 
     void Awake()
     {
-        maxHealth = maxHealthBoss;
-        curHealth = curHealthBoss;
         radius = 0.5f;
         range = 25f;
         Initialize();
@@ -43,7 +38,6 @@ public class cBoss : cEnemy
         if (isDead)
             return;
 
-        curHealthBoss = curHealth;
         if (isLook)
         {
             lookVec = target.GetComponent<Player>().GetPlayerDir();
@@ -66,17 +60,14 @@ public class cBoss : cEnemy
             case 0:
             case 1:
                 // 미사일 발사
-                Debug.Log("미사일");
                 StartCoroutine("ShotMissile");
                 break;
             case 2:
             case 3:
-                Debug.Log("돌");
                 // 돌 굴리기
                 StartCoroutine("ShotRock");
                 break;
             case 4:
-                Debug.Log("점프");
                 // 점프 공격 패턴
                 StartCoroutine("JumpAttack");
                 break;
@@ -90,14 +81,12 @@ public class cBoss : cEnemy
         yield return new WaitForSeconds(0.2f);
         
         GameObject missileA = Instantiate(missile, missilePortA.transform.position, missilePortA.transform.rotation);
-        // 인라인으로 처리하면 뭐가 안좋나?
         cBossMissile missilACom = missileA.GetComponent<cBossMissile>();
         missilACom.target = target;
 
         yield return new WaitForSeconds(0.3f);
 
         GameObject missileB = Instantiate(missile, missilePortB.transform.position, missilePortB.transform.rotation);
-        // 인라인으로 처리하면 뭐가 안좋나?
         cBossMissile missileBCom = missileB.GetComponent<cBossMissile>();
         missileBCom.target = target;
 
@@ -111,7 +100,6 @@ public class cBoss : cEnemy
         isLook = false;
         anim.SetTrigger("doBigShot");
         Instantiate(bossBullet, transform.position, transform.rotation);
-        Debug.Log(transform.rotation);
         yield return new WaitForSeconds(3f);
 
         isLook = true;
@@ -144,19 +132,11 @@ public class cBoss : cEnemy
     protected override IEnumerator Attack()
     {
         yield return null;
-        //isAttack = true;
-        //isChase = false;
-        //anim.SetBool("isAttack", isAttack);
+    }
 
-        //yield return new WaitForSeconds(0.5f);
-        //GameObject _bullet = Instantiate(bullet, this.transform.position, this.transform.rotation);
-        //Rigidbody rigid_bullet = _bullet.GetComponent<Rigidbody>();
-        //rigid_bullet.AddForce(transform.forward * shotPower, ForceMode.Impulse);
-
-        //yield return new WaitForSeconds(2f);
-
-        //isAttack = false;
-        //isChase = true;
-        //anim.SetBool("isAttack", isAttack);
+    protected override void DeadCount()
+    {
+        if (curHealth <= 0)
+            manager.enemyCountD--;
     }
 }

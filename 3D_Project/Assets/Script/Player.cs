@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     MeshRenderer[] meshRenderders;
 
     [Header("[PlayerInfo]")]
+    public GameManager manager;
     public Camera followCamere;
     public GameObject[] grenades;
     public int score;
@@ -20,6 +21,7 @@ public class Player : MonoBehaviour
     public int health;
     public int hasGrenades;
     bool isDamage;
+    bool isDead;
 
     [Header("[PlayerInfo_Max]")]
     public int maxAmmo;
@@ -44,6 +46,7 @@ public class Player : MonoBehaviour
     bool isAir;
     bool isDodge;
     bool isRoll;
+    bool isRollCool;
 
     bool isBorder;
     bool isShop;
@@ -118,7 +121,6 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name);
         if (other.gameObject.CompareTag("Item"))
         {
             cItem item = other.GetComponent<cItem>();
@@ -195,6 +197,9 @@ public class Player : MonoBehaviour
             meshRenderer.material.color = Color.yellow;
         }
 
+        if (health <= 0 && !isDead)
+            OnDie();
+
         yield return new WaitForSeconds(1f);
 
         isDamage = false;
@@ -202,6 +207,13 @@ public class Player : MonoBehaviour
         {
             meshRenderer.material.color = Color.white;
         }
+    }
+
+    void OnDie()
+    {
+        anim.SetTrigger("doDie");
+        isDead = true;
+        manager.GameOver();
     }
 
     void FreezeRotation()
@@ -236,7 +248,7 @@ public class Player : MonoBehaviour
         // 회피할 때 dir 고정
         if (isRoll)
             moveDir = dodgeDir;
-        if (isSwap || !isFireReady || isLoading)
+        if (isSwap || !isFireReady || isLoading || isDead)
             moveDir = Vector3.zero;
 
         // 애니메이션
@@ -250,7 +262,7 @@ public class Player : MonoBehaviour
         transform.LookAt(transform.position + moveDir);
 
         // 마우스 회전
-        if (isFire)
+        if (isFire && !isDead)
         {
             Ray ray = followCamere.ScreenPointToRay(Input.mousePosition);
             RaycastHit rayHit;
@@ -277,7 +289,7 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if (isJump && !isAir && !isDodge)
+        if (isJump && !isAir && !isRoll && !isDead)
         {
             rigid.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
             isAir = true;
@@ -290,13 +302,14 @@ public class Player : MonoBehaviour
 
     void Dodge()
     {
-        if (isDodge && !isAir && !isJump)
+        if (isDodge && !isRollCool && !isAir && !isJump && !isSwap && !isDead)
         {
             // 플레이어 Dir 방향으로 이동
             dodgeDir = moveDir;
 
             speed *= 3f;
             isRoll = true;
+            isRollCool = true;
 
             // 애니메이션
             anim.SetTrigger("doDodge");
@@ -309,11 +322,24 @@ public class Player : MonoBehaviour
     {
         speed = defaultSpeed;
         isRoll = false;
+        StartCoroutine("RollCoolTime");
+    }
+
+    IEnumerator RollCoolTime()
+    {
+        float rollCoolTime = 1f;
+        float coolTime = 0;
+        while (coolTime <= rollCoolTime)
+        {
+            coolTime += Time.deltaTime;
+            yield return null;
+        }
+        isRollCool = false;
     }
 
     void Interection()
     {
-        if (isWeaponTrigger && nearObject != null)
+        if (isWeaponTrigger && nearObject != null && !isDead)
         {
             if (nearObject.CompareTag("Weapon"))
             {
@@ -346,7 +372,7 @@ public class Player : MonoBehaviour
         if (!hasWeapon[weaponIndex])
             return;
 
-        if ((_swapHammer || _swapHandGun || _swapSubMachineGun) && !isJump && !isDodge && !isSwap)
+        if ((_swapHammer || _swapHandGun || _swapSubMachineGun) && !isJump && !isRoll && !isSwap)
         {
             if (!curWeapon)
                 preWeaponIndex = weaponIndex;
@@ -386,7 +412,7 @@ public class Player : MonoBehaviour
         if (fireDelay >= curWeapon.rate)
             isFireReady = true;
 
-        if (isFire && isFireReady && !isDodge && !isSwap && !isShop)
+        if (isFire && isFireReady && !isRoll && !isSwap && !isShop)
         {
             curWeapon.Use();
 
@@ -440,7 +466,7 @@ public class Player : MonoBehaviour
             return;
 
 
-        if (isReload && !isJump && !isDodge && !isSwap && isFireReady)
+        if (isReload && !isJump && !isRoll && !isSwap && isFireReady)
         {
             isLoading = true;
             anim.SetTrigger("doReload");

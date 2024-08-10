@@ -5,8 +5,13 @@ using UnityEngine.AI;
 
 public abstract class cEnemy : MonoBehaviour
 {
-    protected int maxHealth;
-    protected int curHealth;
+    public GameManager manager;
+
+    public int score;
+    public GameObject[] coins;
+
+    public int maxHealth;
+    public int curHealth;
     protected float radius = 1.5f;
     protected float range = 2f;
     protected Transform target;
@@ -130,14 +135,22 @@ public abstract class cEnemy : MonoBehaviour
 
             gameObject.layer = 12;
             isDead = true;
+            DeadCount();
 
             anim.SetTrigger("doDie");
             isChase = false;
             nav.enabled = false;
 
+            Player player = target.GetComponent<Player>();
+            player.score += score;
+            int randCoin = Random.Range(0, 3);
+            Instantiate(coins[randCoin], transform.position, Quaternion.identity);
+
             Destroy(gameObject, 3f);
         }
     }
+
+    protected abstract void DeadCount();
 
     Vector3 KnockBack(Collider other)
     {
