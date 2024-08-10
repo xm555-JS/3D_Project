@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     [Header("[PlayerInfo]")]
     public Camera followCamere;
     public GameObject[] grenades;
+    public int score;
     public int ammo;
     public int coin;
     public int health;
@@ -51,7 +52,7 @@ public class Player : MonoBehaviour
     public GameObject[] weapons;
     public bool[] hasWeapon;
     public GameObject grenadeObj;
-    cWeapon curWeapon;
+    public cWeapon curWeapon;
     GameObject nearObject;
 
     bool isWeaponTrigger;
@@ -75,6 +76,8 @@ public class Player : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
         meshRenderders = GetComponentsInChildren<MeshRenderer>();
+
+        PlayerPrefs.SetInt("MaxScore", 12345);
     }
 
     void Start()

@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class cBoss : cEnemy
 {
-    public int maxHealthC;
-    public int curHealthC;
+    public int maxHealthBoss;
+    public int curHealthBoss;
 
     public GameObject missilePortA;
     public GameObject missilePortB;
@@ -23,8 +23,8 @@ public class cBoss : cEnemy
 
     void Awake()
     {
-        maxHealth = maxHealthC;
-        curHealth = curHealthC;
+        maxHealth = maxHealthBoss;
+        curHealth = curHealthBoss;
         radius = 0.5f;
         range = 25f;
         Initialize();
@@ -40,6 +40,10 @@ public class cBoss : cEnemy
 
     protected override void Update()
     {
+        if (isDead)
+            return;
+
+        curHealthBoss = curHealth;
         if (isLook)
         {
             lookVec = target.GetComponent<Player>().GetPlayerDir();
