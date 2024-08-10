@@ -106,11 +106,11 @@ public class cBoss : cEnemy
     {
         isLook = false;
         anim.SetTrigger("doBigShot");
-        Instantiate(bossBullet, this.transform.position, this.transform.rotation);
+        Instantiate(bossBullet, transform.position, transform.rotation);
+        Debug.Log(transform.rotation);
         yield return new WaitForSeconds(3f);
 
         isLook = true;
-
         StartCoroutine("Think");
     }
 

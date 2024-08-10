@@ -27,9 +27,9 @@ public class cBossRock : cBullet
         while (!isShot)
         {
             angularPower += 0.02f;
-            scaleValue += 0.005f;
+            scaleValue += 0.001f;
             this.transform.localScale = Vector3.one * scaleValue;
-            rigid.AddTorque(Vector3.right * angularPower, ForceMode.Acceleration);
+            rigid.AddTorque(transform.right * angularPower, ForceMode.Acceleration);
 
             yield return null;
         }

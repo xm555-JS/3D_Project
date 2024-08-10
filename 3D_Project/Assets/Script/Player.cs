@@ -45,6 +45,7 @@ public class Player : MonoBehaviour
     bool isRoll;
 
     bool isBorder;
+    bool isShop;
 
     [Header("[Weapon]")]
     public GameObject[] weapons;
@@ -165,7 +166,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.CompareTag("Weapon"))
+        if (other.gameObject.CompareTag("Weapon") || other.gameObject.CompareTag("Shop"))
             nearObject = other.gameObject;
     }
 
@@ -173,6 +174,13 @@ public class Player : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Weapon"))
             nearObject = null;
+        if (other.gameObject.CompareTag("Shop"))
+        {
+            cShop shop = other.GetComponent<cShop>();
+            shop.Exit();
+            isShop = false;
+            nearObject = null;
+        }
     }
 
     IEnumerator OnDamage()
@@ -312,6 +320,12 @@ public class Player : MonoBehaviour
 
                 Destroy(nearObject);
             }
+            else if (nearObject.CompareTag("Shop"))
+            {
+                cShop shop = nearObject.GetComponent<cShop>();
+                shop.Enter(this);
+                isShop = true;
+            }
         }
     }
 
@@ -369,7 +383,7 @@ public class Player : MonoBehaviour
         if (fireDelay >= curWeapon.rate)
             isFireReady = true;
 
-        if (isFire && isFireReady && !isDodge && !isSwap)
+        if (isFire && isFireReady && !isDodge && !isSwap && !isShop)
         {
             curWeapon.Use();
 
