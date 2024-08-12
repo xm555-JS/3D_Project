@@ -22,6 +22,7 @@ public abstract class cEnemy : MonoBehaviour
     protected Rigidbody rigid;
     protected BoxCollider boxCollider;
     protected MeshRenderer[] materials;
+    protected List<MeshRenderer> materialList = new List<MeshRenderer>();
     protected NavMeshAgent nav;
     protected Animator anim;
 
@@ -36,7 +37,16 @@ public abstract class cEnemy : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody>();
         boxCollider = GetComponent<BoxCollider>();
+
         materials = GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer material in materials)
+        {
+            if (material.gameObject.CompareTag("MiniMonster"))
+                continue;
+
+            materialList.Add(material);
+        }
+
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponentInChildren<Animator>();
     }
@@ -113,7 +123,7 @@ public abstract class cEnemy : MonoBehaviour
 
     IEnumerator Hit(Vector3 dir, bool isGrenade = false)
     {
-        foreach (MeshRenderer mesh in materials)
+        foreach (MeshRenderer mesh in materialList)
             mesh.material.color = Color.red;
 
         yield return new WaitForSeconds(0.1f);
@@ -125,12 +135,12 @@ public abstract class cEnemy : MonoBehaviour
 
         if (curHealth > 0f)
         {
-            foreach (MeshRenderer mesh in materials)
+            foreach (MeshRenderer mesh in materialList)
                 mesh.material.color = Color.white;
         }
         else
         {
-            foreach (MeshRenderer mesh in materials)
+            foreach (MeshRenderer mesh in materialList)
                 mesh.material.color = Color.gray;
 
             gameObject.layer = 12;

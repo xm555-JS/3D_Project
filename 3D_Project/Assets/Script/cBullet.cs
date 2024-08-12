@@ -8,6 +8,19 @@ public class cBullet : MonoBehaviour
     public bool isMelee;
     public bool isRock;
 
+    //float destroyTime = 5f;
+    //float timer;
+
+    //void Update()
+    //{
+    //    timer += Time.deltaTime;
+    //    if (timer >= destroyTime)
+    //    {
+    //        Destroy(gameObject);
+    //        timer = 0;
+    //    }
+    //}
+
     void OnCollisionEnter(Collision collision)
     {
         if (!isRock && collision.gameObject.CompareTag("Floor"))
