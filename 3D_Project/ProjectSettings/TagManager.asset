@@ -14,6 +14,8 @@ TagManager:
   - EnemyBullet
   - Shop
   - MiniMonster
+  - Mini_Player
+  - Mini_Camera
   layers:
   - Default
   - TransparentFX
@@ -31,8 +33,8 @@ TagManager:
   - EnemyBullet
   - Minimap
   - 
-  - 
-  - 
+  - Mini_Floor_Player
+  - Mini_Monster
   - 
   - 
   - 

@@ -8,18 +8,18 @@ public class cBullet : MonoBehaviour
     public bool isMelee;
     public bool isRock;
 
-    //float destroyTime = 5f;
-    //float timer;
+    float destroyTime = 3f;
+    float timer;
 
-    //void Update()
-    //{
-    //    timer += Time.deltaTime;
-    //    if (timer >= destroyTime)
-    //    {
-    //        Destroy(gameObject);
-    //        timer = 0;
-    //    }
-    //}
+    void Update()
+    {
+        timer += Time.deltaTime;
+        if (timer >= destroyTime)
+        {
+            Destroy(gameObject);
+            timer = 0f;
+        }
+    }
 
     void OnCollisionEnter(Collision collision)
     {

@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public GameObject itemShop;
     public GameObject weaponShop;
     public GameObject startZone;
+    public GameObject miniGameZone;
 
     [Header("[Player]")]
     public Player player;
@@ -34,6 +35,9 @@ public class GameManager : MonoBehaviour
     public int enemyCountB;
     public int enemyCountC;
     public int enemyCountD;
+
+    [Header("[MiniGame_Info]")]
+    public bool isMiniGame;
 
     [Header("[UI_Group]")]
     public GameObject menuPanel;
@@ -60,6 +64,17 @@ public class GameManager : MonoBehaviour
     public Text curScoreText;
     public Text bestText;
 
+    //bossHealthBar
+    Image healthBarImg;
+    float rate = 1f;
+    bool isTwinkling;
+    Animator healthBarAnim;
+
+    // PlayerHealthImg
+    public Image playerHealthImg;
+    Animator playerHealthAnim;
+    bool isShaking;
+
     void Awake()
     {
         //int maxScore = PlayerPrefs.GetInt("MaxScore");
@@ -71,6 +86,11 @@ public class GameManager : MonoBehaviour
 
         if (!PlayerPrefs.HasKey("MaxScore"))
             PlayerPrefs.SetInt("MaxScore", 0);
+
+        healthBarImg = bossHealthBar.GetComponent<Image>();
+        healthBarAnim = bossHealthBar.GetComponent<Animator>();
+
+        playerHealthAnim = playerHealthImg.gameObject.GetComponent<Animator>();
     }
 
     public void GameStart()
@@ -111,6 +131,7 @@ public class GameManager : MonoBehaviour
         itemShop.SetActive(false);
         weaponShop.SetActive(false);
         startZone.SetActive(false);
+        miniGameZone.SetActive(false);
 
         foreach (Transform zone in enemyZones)
             zone.gameObject.SetActive(true);
@@ -125,12 +146,41 @@ public class GameManager : MonoBehaviour
         itemShop.SetActive(true);
         weaponShop.SetActive(true);
         startZone.SetActive(true);
+        miniGameZone.SetActive(true);
 
         foreach (Transform zone in enemyZones)
             zone.gameObject.SetActive(false);
 
         isBattle = false;
         stage++;
+    }
+
+    public void MiniGameStart()
+    {
+        isMiniGame = true;
+
+        itemShop.SetActive(false);
+        weaponShop.SetActive(false);
+        startZone.SetActive(false);
+        miniGameZone.SetActive(false);
+
+        foreach (Transform zone in enemyZones)
+            zone.gameObject.SetActive(true);
+    }
+
+    public void MiniGameEnd()
+    {
+        player.transform.position = Vector3.up * 1.4f;
+
+        itemShop.SetActive(true);
+        weaponShop.SetActive(true);
+        startZone.SetActive(true);
+        miniGameZone.SetActive(true);
+
+        foreach (Transform zone in enemyZones)
+            zone.gameObject.SetActive(false);
+
+        isBattle = false;
     }
 
     IEnumerator InBattle()
@@ -243,9 +293,63 @@ public class GameManager : MonoBehaviour
         if (boss != null)
         {
             bossHealthGroup.anchoredPosition = Vector3.down * 30f;
-            bossHealthBar.localScale = new Vector3((float)boss.curHealth / boss.maxHealth, 1f, 1f);
+
+            float bossHealthRate = (float)boss.curHealth / boss.maxHealth;
+            if (rate > bossHealthRate)
+            {
+                rate -= Time.deltaTime;
+                rate = Mathf.Max(rate, bossHealthRate);
+
+                if (!isTwinkling)
+                {
+                    //StartCoroutine("Twinking");
+                    healthBarAnim.SetBool("isTwinkling", true);
+                    isTwinkling = true;
+                }
+            }
+            else
+            {
+                //StopCoroutine("Twinking");
+                healthBarAnim.SetBool("isTwinkling", false);
+                isTwinkling = false;
+
+                healthBarImg.color = new Color(1f, 0f, 0f, 1f);
+            }
+
+
+            float bossRate = Mathf.Lerp(0f, 1f, rate);
+            bossHealthBar.localScale = new Vector3(bossRate, 1f, 1f);
         }
         else
             bossHealthGroup.anchoredPosition = Vector3.up * 200f;
+
+        // PlayerHealthImg
+        if (player.health <= (player.maxHealth / 2) && !isShaking)
+        {
+            Debug.Log("isShaking");
+            playerHealthAnim.SetBool("isShaking", true);
+            isShaking = true;
+        }
+        else if (player.health > (player.maxHealth / 2) && isShaking)
+        {
+            Debug.Log("Not isShaking");
+            playerHealthAnim.SetBool("isShaking", false);
+            isShaking = false;
+        }
+            
     }
+
+    //IEnumerator Twinking()
+    //{
+    //    isTwinkling = true;
+
+    //    while (true)
+    //    {
+    //        healthBarImg.color = new Color(0.5f, 0f, 0f, 1f);
+    //        yield return new WaitForSeconds(0.3f);
+
+    //        healthBarImg.color = new Color(1f, 0f, 0f, 1f);
+    //        yield return new WaitForSeconds(0.3f);
+    //    }
+    //}
 }
