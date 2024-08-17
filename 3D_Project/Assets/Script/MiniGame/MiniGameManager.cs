@@ -21,11 +21,20 @@ public class MiniGameManager : MonoBehaviour
 
     [Header("[TimmerController]")]
     [SerializeField] float timer;
-    [SerializeField] bool isFinish;
+    [SerializeField] bool isStageFinish;
+    float saveTimer;
     Animator anim;
 
-    public void GetCoin(int getCoin) { coin -= getCoin; }
-    public void StartTimmer() { isFinish = true; }
+    [Header("[EnemySpawn]")]
+    [SerializeField] cSpawnMonster enemySpawn;
+
+    [Header("[AOE]")]
+    [SerializeField] GameObject Aoe;
+
+    WaitForSeconds BreakTime = new WaitForSeconds(3f);
+
+    public void GetCoin(int getCoin) { coin += getCoin; }
+    public void StartTimmer() { isStageFinish = true; }
     public void NextStage() { stageNum++; }
 
     void Awake()
@@ -33,11 +42,16 @@ public class MiniGameManager : MonoBehaviour
         InitializeTimer();
     }
 
-    void Update()
+    void Start()
+    {
+        StartEnemySpawn();
+    }
+
+    void LateUpdate()
     {
         CoinUpdate();
         StageTxtUpdate();
-        if (!isFinish)
+        if (!isStageFinish)
         {
             Timer();
             TimerControll();
@@ -75,20 +89,33 @@ public class MiniGameManager : MonoBehaviour
     void InitializeTimer()
     {
         anim = timerImg.GetComponent<Animator>();
+        saveTimer = timer;
     }
 
     void Timer()
     {
         // ½Ã°£ Update
-        if (timer <= 0f)
+        if (timer <= 0f && !isStageFinish)
         {
             timer = 0f;
-            isFinish = true;
+            isStageFinish = true;
             FinishedAnimation();
+            StartCoroutine(StageStart());
+            DontEnemySpawn();
         }
 
-        if (!isFinish)
+        if (!isStageFinish)
             timer -= Time.deltaTime;
+    }
+
+    IEnumerator StageStart()
+    {
+        yield return BreakTime;
+
+        NextStage();
+        timer = saveTimer;
+        isStageFinish = false;
+        StartEnemySpawn();
     }
 
     void TimerControll()
@@ -104,12 +131,40 @@ public class MiniGameManager : MonoBehaviour
 
     void HandleAnimation()
     {
-        if (timer <= 10f && !isFinish)
+        if (timer <= 10f && !isStageFinish)
             anim.SetBool("isShaking", true);
     }
 
     void FinishedAnimation()
     {
         anim.SetBool("isShaking", false);
+    }
+
+    void StartEnemySpawn()
+    {
+        enemySpawn.SpawnEnemy(stageNum);
+    }
+
+    void DontEnemySpawn()
+    {
+        enemySpawn.DontSpawnEnemy();
+    }
+
+    public void MiniGameOver()
+    {
+        Aoe.SetActive(true);
+        StartCoroutine(AoeSetactiveFalse());
+        stageNum = 0;
+        timer = 0f;
+        isStageFinish = true;
+        FinishedAnimation();
+        StartCoroutine(StageStart());
+        DontEnemySpawn();
+    }
+
+    IEnumerator AoeSetactiveFalse()
+    {
+        yield return new WaitForSeconds(2f);
+        Aoe.SetActive(false);
     }
 }

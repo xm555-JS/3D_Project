@@ -4,28 +4,53 @@ using UnityEngine;
 
 public class cSpawnMonster : MonoBehaviour
 {
-    public GameObject enemyA;
-    public GameObject enemyB;
-    public GameObject enemyC;
-    public GameObject enemyD;
+    [SerializeField] GameObject[] enemys;
 
-    void Update()
+    float instateTime = 1f;
+    bool isNormalSpawn = true;
+    bool isBossSpawn;
+
+    public void SpawnEnemy(int stageNum)
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        CheckSpawn(stageNum);
+        StartCoroutine(instateEnemy(stageNum));
+    }
+
+    public void DontSpawnEnemy()
+    {
+        StopAllCoroutines();
+    }
+
+    IEnumerator instateEnemy(int stageNum)
+    {
+        if (isBossSpawn)
+            Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
+
+
+        float time = 0;
+        while (isNormalSpawn)
         {
-            Instantiate(enemyA, transform.position, transform.rotation);
+            time += Time.deltaTime;
+            if (time >= instateTime)
+            {
+                Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
+                time = 0f;
+            }
+            yield return null;
         }
-        if (Input.GetKeyDown(KeyCode.X))
+        isNormalSpawn = true;
+    }
+
+    void CheckSpawn(int stageNum)
+    {
+        const int normalStage = 3;
+        if (stageNum > normalStage)
         {
-            Instantiate(enemyB, transform.position, transform.rotation);
+            isNormalSpawn = false;
+            isBossSpawn = true;
+            return;
         }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Instantiate(enemyC, transform.position, transform.rotation);
-        }
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            Instantiate(enemyD, transform.position, transform.rotation);
-        }
+        else
+            isNormalSpawn = true;
     }
 }

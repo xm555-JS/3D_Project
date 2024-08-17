@@ -13,6 +13,9 @@ public class cBullet : MonoBehaviour
 
     void Update()
     {
+        if (isRock || isMelee)
+            return;
+
         timer += Time.deltaTime;
         if (timer >= destroyTime)
         {

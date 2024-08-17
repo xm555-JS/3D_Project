@@ -4,16 +4,30 @@ using UnityEngine;
 
 public class cMini_Enemy : MonoBehaviour
 {
-    protected MeshRenderer[] materials;
-    protected List<MeshRenderer> materialList = new List<MeshRenderer>();
-
-    public int maxHealth;
-    public int curHealth;
-    public float speed;
+    [Header("[Info]")]
+    [SerializeField] int maxHealth;
+    [SerializeField] int curHealth;
+    [SerializeField] float speed;
     bool isDead;
+    public static int enemyCount;
+
+    MeshRenderer[] materials;
+    List<MeshRenderer> materialList = new List<MeshRenderer>();
+    Animator anim;
+
+    static MiniGameManager miniGameManager;
 
     void Awake()
     {
+        enemyCount++;
+        CheckGameOver();
+
+        Debug.Log(enemyCount);
+        GameObject manager = GameObject.FindGameObjectWithTag("MiniGameManager");
+        miniGameManager = manager.GetComponent<MiniGameManager>();
+
+        anim = GetComponentInChildren<Animator>();
+
         materials = GetComponentsInChildren<MeshRenderer>();
         foreach (MeshRenderer material in materials)
         {
@@ -33,6 +47,12 @@ public class cMini_Enemy : MonoBehaviour
         transform.position += transform.forward * Time.deltaTime * speed;
     }
 
+    void CheckGameOver()
+    {
+        if (enemyCount >= 60)
+            miniGameManager.MiniGameOver();
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Bullet"))
@@ -42,7 +62,8 @@ public class cMini_Enemy : MonoBehaviour
 
             StartCoroutine(Hit());
 
-            Destroy(other.gameObject);
+            if (!bullet.isMelee)
+                Destroy(other.gameObject);
         }
     }
 
@@ -57,7 +78,6 @@ public class cMini_Enemy : MonoBehaviour
             foreach (MeshRenderer mesh in materialList)
                 mesh.material.color = Color.white;
         }
-
         else
         {
             foreach (MeshRenderer mesh in materialList)
@@ -65,7 +85,11 @@ public class cMini_Enemy : MonoBehaviour
 
             gameObject.layer = 12;
             isDead = true;
+            enemyCount--;
+            anim.SetTrigger("doDie");
             Destroy(gameObject, 3f);
+
+            miniGameManager.GetCoin(100);
         }
     }
 }

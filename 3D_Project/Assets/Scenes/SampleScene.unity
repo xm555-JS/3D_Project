@@ -12048,10 +12048,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 956bbefbf2976374da74fc47dd9528af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyA: {fileID: 6951902079265447856, guid: 8bc1a1b3eb65162499cd45aa8924a278, type: 3}
-  enemyB: {fileID: 1338182129564506687, guid: eeee64e5ddc049748a89b67115904d20, type: 3}
-  enemyC: {fileID: 6411351089395596109, guid: 3b79c85217cb00c41ad9cb06d946682f, type: 3}
-  enemyD: {fileID: 366160980411612903, guid: 50a9876028c31d24fbb4c47f7f722f0a, type: 3}
+  enemys:
+  - {fileID: 6951902079265447856, guid: 8bc1a1b3eb65162499cd45aa8924a278, type: 3}
+  - {fileID: 1338182129564506687, guid: eeee64e5ddc049748a89b67115904d20, type: 3}
+  - {fileID: 6411351089395596109, guid: 3b79c85217cb00c41ad9cb06d946682f, type: 3}
+  - {fileID: 366160980411612903, guid: 50a9876028c31d24fbb4c47f7f722f0a, type: 3}
 --- !u!1 &396266887
 GameObject:
   m_ObjectHideFlags: 0
@@ -12451,6 +12452,7 @@ Transform:
   - {fileID: 395004990}
   - {fileID: 1884477860}
   - {fileID: 1970534074}
+  - {fileID: 805875017}
   m_Father: {fileID: 0}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12880,8 +12882,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: cCoin, Assembly-CSharp
+      - m_Target: {fileID: 1884477861}
+        m_TargetAssemblyTypeName: MiniGameManager, Assembly-CSharp
         m_MethodName: GetCoin
         m_Mode: 3
         m_Arguments:
@@ -15716,6 +15718,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 790084706}
   m_CullTransparentMesh: 1
+--- !u!1 &805875016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 805875017}
+  - component: {fileID: 805875018}
+  - component: {fileID: 805875019}
+  m_Layer: 0
+  m_Name: AOE
+  m_TagString: Bullet
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &805875017
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805875016}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 478659807}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &805875018
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805875016}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 80, y: 10, z: 80}
+  m_Center: {x: -6.5, y: 25, z: 0}
+--- !u!114 &805875019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805875016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5395aafa2fe9f034dba68ba1afcd0aa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 1000
+  isMelee: 1
+  isRock: 0
 --- !u!1 &809925638
 GameObject:
   m_ObjectHideFlags: 0
@@ -16072,8 +16135,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: cCoin, Assembly-CSharp
+      - m_Target: {fileID: 1884477861}
+        m_TargetAssemblyTypeName: MiniGameManager, Assembly-CSharp
         m_MethodName: GetCoin
         m_Mode: 3
         m_Arguments:
@@ -16726,8 +16789,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: cCoin, Assembly-CSharp
+      - m_Target: {fileID: 1884477861}
+        m_TargetAssemblyTypeName: MiniGameManager, Assembly-CSharp
         m_MethodName: UseCoin
         m_Mode: 3
         m_Arguments:
@@ -17818,8 +17881,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: cCoin, Assembly-CSharp
+      - m_Target: {fileID: 1884477861}
+        m_TargetAssemblyTypeName: MiniGameManager, Assembly-CSharp
         m_MethodName: UseCoin
         m_Mode: 3
         m_Arguments:
@@ -19952,8 +20015,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: cCoin, Assembly-CSharp
+      - m_Target: {fileID: 1884477861}
+        m_TargetAssemblyTypeName: MiniGameManager, Assembly-CSharp
         m_MethodName: GetCoin
         m_Mode: 3
         m_Arguments:
@@ -49163,7 +49226,7 @@ GameObject:
   - component: {fileID: 1884477861}
   m_Layer: 0
   m_Name: MiniGameManager
-  m_TagString: Untagged
+  m_TagString: MiniGameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -49200,8 +49263,10 @@ MonoBehaviour:
   stageNum: 1
   timerImg: {fileID: 970697769}
   timerTxt: {fileID: 950300179}
-  timer: 60
-  isFinish: 0
+  timer: 10
+  isStageFinish: 0
+  enemySpawn: {fileID: 395004991}
+  Aoe: {fileID: 805875016}
 --- !u!1 &1889285093
 GameObject:
   m_ObjectHideFlags: 0
@@ -50060,9 +50125,9 @@ MonoBehaviour:
   - {fileID: 6178524596841237585, guid: aa09d38bf801090488b78b74ff39ec26, type: 3}
   - {fileID: 6178524596841237585, guid: bd4e111d0707e8f44bcac5b485684c02, type: 3}
   playerProbs:
-  - 5
-  - 3
+  - 7
   - 2
+  - 1
 --- !u!4 &1970534074
 Transform:
   m_ObjectHideFlags: 0

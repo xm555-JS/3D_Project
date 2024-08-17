@@ -89,7 +89,6 @@ public class GameManager : MonoBehaviour
 
         healthBarImg = bossHealthBar.GetComponent<Image>();
         healthBarAnim = bossHealthBar.GetComponent<Animator>();
-
         playerHealthAnim = playerHealthImg.gameObject.GetComponent<Animator>();
     }
 
@@ -326,13 +325,11 @@ public class GameManager : MonoBehaviour
         // PlayerHealthImg
         if (player.health <= (player.maxHealth / 2) && !isShaking)
         {
-            Debug.Log("isShaking");
             playerHealthAnim.SetBool("isShaking", true);
             isShaking = true;
         }
         else if (player.health > (player.maxHealth / 2) && isShaking)
         {
-            Debug.Log("Not isShaking");
             playerHealthAnim.SetBool("isShaking", false);
             isShaking = false;
         }

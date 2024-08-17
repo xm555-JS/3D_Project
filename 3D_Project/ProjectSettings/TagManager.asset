@@ -16,6 +16,7 @@ TagManager:
   - MiniMonster
   - Mini_Player
   - Mini_Camera
+  - MiniGameManager
   layers:
   - Default
   - TransparentFX
