@@ -47,6 +47,11 @@ public class MiniGameManager : MonoBehaviour
         StartEnemySpawn();
     }
 
+    void Update()
+    {
+        MiniGameOver();
+    }
+
     void LateUpdate()
     {
         CoinUpdate();
@@ -150,16 +155,22 @@ public class MiniGameManager : MonoBehaviour
         enemySpawn.DontSpawnEnemy();
     }
 
-    public void MiniGameOver()
+    void MiniGameOver()
     {
-        Aoe.SetActive(true);
-        StartCoroutine(AoeSetactiveFalse());
-        stageNum = 0;
-        timer = 0f;
-        isStageFinish = true;
-        FinishedAnimation();
-        StartCoroutine(StageStart());
-        DontEnemySpawn();
+        bool isGameOver = enemySpawn.CheckGameOver(); ;
+        if (isGameOver)
+        {
+            Aoe.SetActive(true);
+            StartCoroutine(AoeSetactiveFalse());
+            stageNum = 0;
+            timer = 0f;
+            coin = 1000;
+            isStageFinish = true;
+            FinishedAnimation();
+            enemySpawn.ResetSpawn();
+            StartCoroutine(StageStart());
+            DontEnemySpawn();
+        }
     }
 
     IEnumerator AoeSetactiveFalse()

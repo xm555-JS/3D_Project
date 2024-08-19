@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class cMini_Enemy : MonoBehaviour
 {
     [Header("[Info]")]
@@ -15,16 +15,12 @@ public class cMini_Enemy : MonoBehaviour
     List<MeshRenderer> materialList = new List<MeshRenderer>();
     Animator anim;
 
-    static MiniGameManager miniGameManager;
+    public static event Action<cMini_Enemy> OnEnemyDeath;
+    public static event Action<cMini_Enemy> OnEnemyAwake;
 
     void Awake()
     {
-        enemyCount++;
-        CheckGameOver();
-
-        Debug.Log(enemyCount);
-        GameObject manager = GameObject.FindGameObjectWithTag("MiniGameManager");
-        miniGameManager = manager.GetComponent<MiniGameManager>();
+        OnEnemyAwake?.Invoke(this);
 
         anim = GetComponentInChildren<Animator>();
 
@@ -45,12 +41,6 @@ public class cMini_Enemy : MonoBehaviour
             return;
 
         transform.position += transform.forward * Time.deltaTime * speed;
-    }
-
-    void CheckGameOver()
-    {
-        if (enemyCount >= 60)
-            miniGameManager.MiniGameOver();
     }
 
     void OnTriggerEnter(Collider other)
@@ -87,9 +77,8 @@ public class cMini_Enemy : MonoBehaviour
             isDead = true;
             enemyCount--;
             anim.SetTrigger("doDie");
+            OnEnemyDeath?.Invoke(this);
             Destroy(gameObject, 3f);
-
-            miniGameManager.GetCoin(100);
         }
     }
 }

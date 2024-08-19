@@ -1,14 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class cSpawnMonster : MonoBehaviour
 {
     [SerializeField] GameObject[] enemys;
 
+    GameObject boss;
+
+    int enemyCount;
+
     float instateTime = 1f;
-    bool isNormalSpawn = true;
+    
+    bool isGameOver;
     bool isBossSpawn;
+    bool isNormalSpawn = true;
+
+    public GameObject GetBossObject() { return boss; }
+
+    void OnEnable()
+    {
+        cMini_Enemy.OnEnemyDeath += HandleEnemyDeath;
+        cMini_Enemy.OnEnemyDeath += HandleEnemyAwake;
+    }
+
+    void OnDisable()
+    {
+        cMini_Enemy.OnEnemyDeath -= HandleEnemyDeath;
+        cMini_Enemy.OnEnemyDeath -= HandleEnemyAwake;
+    }
 
     public void SpawnEnemy(int stageNum)
     {
@@ -24,8 +45,10 @@ public class cSpawnMonster : MonoBehaviour
     IEnumerator instateEnemy(int stageNum)
     {
         if (isBossSpawn)
-            Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
-
+        {
+            boss = Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
+        }
+            
 
         float time = 0;
         while (isNormalSpawn)
@@ -52,5 +75,33 @@ public class cSpawnMonster : MonoBehaviour
         }
         else
             isNormalSpawn = true;
+    }
+
+    public bool CheckGameOver()
+    {
+        if (enemyCount >= 20)
+        {
+            isGameOver = true;
+        }
+
+        return isGameOver;
+    }
+
+    public void ResetSpawn()
+    {
+        isGameOver = false;
+        enemyCount = 0;
+    }
+
+    void HandleEnemyDeath(cMini_Enemy enemy)
+    {
+        enemyCount++;
+        Debug.Log(enemyCount);
+    }
+
+    void HandleEnemyAwake(cMini_Enemy enemy)
+    {
+        enemyCount--;
+        //Debug.log(enemyCount);
     }
 }
