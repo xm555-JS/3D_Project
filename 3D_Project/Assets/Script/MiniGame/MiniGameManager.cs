@@ -5,6 +5,12 @@ using UnityEngine.UI;
 
 public class MiniGameManager : MonoBehaviour
 {
+    [Header("[StartButtonGroup]")]
+    [SerializeField] GameObject startButtonGroup;
+
+    [Header("[Player]")]
+    [SerializeField] cSpawn playerSpawn;
+
     [Header("[Coin]")]
     [SerializeField] Text coinTxt;
     int coin = 1000;
@@ -14,6 +20,7 @@ public class MiniGameManager : MonoBehaviour
     [SerializeField] Text stateTxt;
     [SerializeField] int stageNum;
     int preStageNum;
+    bool isEnd;
 
     [Header("[TimmerView]")]
     [SerializeField] Image timerImg;
@@ -21,15 +28,26 @@ public class MiniGameManager : MonoBehaviour
 
     [Header("[TimmerController]")]
     [SerializeField] float timer;
+    [SerializeField] float saveTimer = 20f;
     [SerializeField] bool isStageFinish;
-    float saveTimer;
     Animator anim;
 
     [Header("[EnemySpawn]")]
     [SerializeField] cSpawnMonster enemySpawn;
 
+    [Header("Boss")]
+    [SerializeField] RectTransform bossHealthGroup;
+    [SerializeField] RectTransform bossHealthBar;
+    Image healthBarImg;
+    Animator healthBarAnim;
+    float rate = 1f;
+    bool isTwinkling;
+
     [Header("[AOE]")]
     [SerializeField] GameObject Aoe;
+
+    [Header("[Reward]")]
+    [SerializeField] GameObject reward;
 
     WaitForSeconds BreakTime = new WaitForSeconds(3f);
 
@@ -40,22 +58,44 @@ public class MiniGameManager : MonoBehaviour
     void Awake()
     {
         InitializeTimer();
+        healthBarImg = bossHealthBar.GetComponent<Image>();
+        healthBarAnim = bossHealthBar.GetComponent<Animator>();
     }
 
-    void Start()
+    void OnEnable()
+    {
+        enemySpawn.OnGetCoin += HandleGetCoin;
+        Initialize();
+    }
+
+    void OnDisable()
+    {
+        enemySpawn.OnGetCoin -= HandleGetCoin;
+    }
+
+    void Initialize()
+    {
+        startButtonGroup.SetActive(true);
+        Aoe.SetActive(false);
+        coin = 1000;
+        timer = saveTimer;
+        isStageFinish = false;
+        enemySpawn.ResetSpawn();
+    }
+
+    public void MiniGameStart()
     {
         StartEnemySpawn();
-    }
-
-    void Update()
-    {
-        MiniGameOver();
     }
 
     void LateUpdate()
     {
         CoinUpdate();
         StageTxtUpdate();
+
+        MiniGameOver();
+        BossHpBar();
+
         if (!isStageFinish)
         {
             Timer();
@@ -94,13 +134,13 @@ public class MiniGameManager : MonoBehaviour
     void InitializeTimer()
     {
         anim = timerImg.GetComponent<Animator>();
-        saveTimer = timer;
+        timer = saveTimer;
     }
 
     void Timer()
     {
         // ½Ã°£ Update
-        if (timer <= 0f && !isStageFinish)
+        if (timer <= 0f && !isStageFinish && stageNum < 5 && !isEnd)
         {
             timer = 0f;
             isStageFinish = true;
@@ -109,7 +149,8 @@ public class MiniGameManager : MonoBehaviour
             DontEnemySpawn();
         }
 
-        if (!isStageFinish)
+        bool isButtonActive = startButtonGroup.activeSelf;
+        if (!isStageFinish && !isEnd && !isButtonActive)
             timer -= Time.deltaTime;
     }
 
@@ -155,27 +196,107 @@ public class MiniGameManager : MonoBehaviour
         enemySpawn.DontSpawnEnemy();
     }
 
+    public void MiniGameExit()
+    {
+        Aoe.SetActive(true);
+        StartCoroutine(AoeSetactiveFalse());
+
+        playerSpawn.RemoveAll();
+
+        stageNum = 1;
+        timer = 0f;
+        isStageFinish = true;
+        if (isEnd)
+            isEnd = false;
+
+        FinishedAnimation();
+        DontEnemySpawn();
+    }
+
     void MiniGameOver()
     {
-        bool isGameOver = enemySpawn.CheckGameOver(); ;
-        if (isGameOver)
+        bool isGameOver = enemySpawn.CheckGameOver();
+        if (isGameOver && !isStageFinish && !isEnd)
+            Restart();
+        if (enemySpawn.GetBossObject() != null)
         {
-            Aoe.SetActive(true);
-            StartCoroutine(AoeSetactiveFalse());
-            stageNum = 0;
-            timer = 0f;
-            coin = 1000;
-            isStageFinish = true;
-            FinishedAnimation();
-            enemySpawn.ResetSpawn();
-            StartCoroutine(StageStart());
-            DontEnemySpawn();
+            if (enemySpawn.GetBossCurHealth() <= 0 && !isStageFinish)
+            {
+                isEnd = true;
+                reward.SetActive(true);
+            }
+            if (enemySpawn.GetBossCurHealth() >= 0 && isStageFinish && stageNum >= 4)
+                Restart();
         }
+    }
+
+    public void Restart()
+    {
+        Aoe.SetActive(true);
+        StartCoroutine(AoeSetactiveFalse());
+
+        FinishedAnimation();
+        DontEnemySpawn();
+
+        playerSpawn.RemoveAll();
+
+        stageNum = 0;
+        timer = 0f;
+        if (isEnd)
+            isEnd = false;
     }
 
     IEnumerator AoeSetactiveFalse()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         Aoe.SetActive(false);
+        coin = 1000;
+        enemySpawn.ResetSpawn();
+    }
+
+    void HandleGetCoin(cSpawnMonster spawn)
+    {
+        coin += 100;
+    }
+
+    void BossHpBar()
+    {
+        GameObject boss = enemySpawn.GetBossObject();
+        if (boss)
+        {
+            bossHealthGroup.anchoredPosition = Vector3.down * 30f;
+
+            float bossHealthRate = (float)enemySpawn.GetBossCurHealth() / enemySpawn.GetBossMaxHealth();
+            if (rate > bossHealthRate)
+            {
+                rate -= Time.deltaTime;
+                rate = Mathf.Max(rate, bossHealthRate);
+
+                if (!isTwinkling)
+                {
+                    healthBarAnim.SetBool("isTwinkling", true);
+                    isTwinkling = true;
+                }
+            }
+            else
+            {
+                healthBarAnim.SetBool("isTwinkling", false);
+                isTwinkling = false;
+
+                healthBarImg.color = new Color(1f, 0f, 0f, 1f);
+            }
+
+
+            float bossRate = Mathf.Lerp(0f, 1f, rate);
+            bossHealthBar.localScale = new Vector3(bossRate, 1f, 1f);
+        }
+        else
+            bossHealthGroup.anchoredPosition = Vector3.up * 200f;
+    }
+
+    public void CloseUI(GameObject ui)
+    {
+        ui.SetActive(false);
     }
 }
+

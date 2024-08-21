@@ -16,12 +16,12 @@ public class cMini_Enemy : MonoBehaviour
     Animator anim;
 
     public static event Action<cMini_Enemy> OnEnemyDeath;
-    public static event Action<cMini_Enemy> OnEnemyAwake;
+
+    public int GetMaxHealth() { return maxHealth; }
+    public int GetCurHealth() { return curHealth; }
 
     void Awake()
     {
-        OnEnemyAwake?.Invoke(this);
-
         anim = GetComponentInChildren<Animator>();
 
         materials = GetComponentsInChildren<MeshRenderer>();
@@ -45,6 +45,9 @@ public class cMini_Enemy : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (isDead)
+            return;
+
         if (other.gameObject.CompareTag("Bullet"))
         {
             cBullet bullet = other.GetComponent<cBullet>();
@@ -70,6 +73,9 @@ public class cMini_Enemy : MonoBehaviour
         }
         else
         {
+            if (isDead)
+                yield break;
+
             foreach (MeshRenderer mesh in materialList)
                 mesh.material.color = Color.gray;
 

@@ -8,6 +8,8 @@ public class cSpawnMonster : MonoBehaviour
     [SerializeField] GameObject[] enemys;
 
     GameObject boss;
+    int bossMaxHealth;
+    int bossCurHealth = 1000;
 
     int enemyCount;
 
@@ -18,17 +20,37 @@ public class cSpawnMonster : MonoBehaviour
     bool isNormalSpawn = true;
 
     public GameObject GetBossObject() { return boss; }
+    public int GetBossMaxHealth() { return bossMaxHealth; }
+    public int GetBossCurHealth() { return bossCurHealth; }
+
+    public event Action<cSpawnMonster> OnGetCoin;
 
     void OnEnable()
     {
         cMini_Enemy.OnEnemyDeath += HandleEnemyDeath;
-        cMini_Enemy.OnEnemyDeath += HandleEnemyAwake;
     }
 
     void OnDisable()
     {
         cMini_Enemy.OnEnemyDeath -= HandleEnemyDeath;
-        cMini_Enemy.OnEnemyDeath -= HandleEnemyAwake;
+    }
+
+    void Update()
+    {
+        if (boss)
+            bossCurHealth = boss.GetComponent<cMini_Enemy>().GetCurHealth();
+    }
+
+    void LateUpdate()
+    {
+        if (isBossSpawn)
+        {
+            if (bossCurHealth <= 0)
+            {
+                boss = null;
+                isBossSpawn = false;
+            }
+        }
     }
 
     public void SpawnEnemy(int stageNum)
@@ -47,8 +69,8 @@ public class cSpawnMonster : MonoBehaviour
         if (isBossSpawn)
         {
             boss = Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
+            bossMaxHealth = boss.GetComponent<cMini_Enemy>().GetMaxHealth();
         }
-            
 
         float time = 0;
         while (isNormalSpawn)
@@ -57,6 +79,8 @@ public class cSpawnMonster : MonoBehaviour
             if (time >= instateTime)
             {
                 Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
+                enemyCount++;
+                Debug.Log(enemyCount);
                 time = 0f;
             }
             yield return null;
@@ -80,9 +104,7 @@ public class cSpawnMonster : MonoBehaviour
     public bool CheckGameOver()
     {
         if (enemyCount >= 20)
-        {
             isGameOver = true;
-        }
 
         return isGameOver;
     }
@@ -95,13 +117,8 @@ public class cSpawnMonster : MonoBehaviour
 
     void HandleEnemyDeath(cMini_Enemy enemy)
     {
-        enemyCount++;
-        Debug.Log(enemyCount);
-    }
-
-    void HandleEnemyAwake(cMini_Enemy enemy)
-    {
         enemyCount--;
-        //Debug.log(enemyCount);
+        OnGetCoin?.Invoke(this);
+        Debug.Log(enemyCount);
     }
 }

@@ -8,9 +8,9 @@ public class cMiniGameZone : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Mini_Player"))
+        if (other.gameObject.CompareTag("Player"))
         {
-            manager.MiniGameStart();
+            manager.MiniGameTrigger();
         }
     }
 }

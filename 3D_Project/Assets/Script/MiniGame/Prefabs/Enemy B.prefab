@@ -78,7 +78,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 120
   curHealth: 120
-  speed: 8
+  speed: 7
 --- !u!1001 &6131187843571669820
 PrefabInstance:
   m_ObjectHideFlags: 0

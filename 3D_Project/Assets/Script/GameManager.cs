@@ -4,11 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+#pragma warning disable 0414
+
 public class GameManager : MonoBehaviour
 {
     [Header("[Camera]")]
     public GameObject menuCam;
     public GameObject gameCam;
+    public GameObject miniCam;
+    public GameObject miniGameCam;
 
     [Header("[Shop]")]
     public GameObject itemShop;
@@ -43,6 +47,7 @@ public class GameManager : MonoBehaviour
     public GameObject menuPanel;
     public GameObject gamePanel;
     public GameObject gameOverPanel;
+    public GameObject miniGamePanel;
 
     [Header("[Game_UI]")]
     public Text maxScoreTxt;
@@ -63,6 +68,12 @@ public class GameManager : MonoBehaviour
     public RectTransform bossHealthBar;
     public Text curScoreText;
     public Text bestText;
+    public CanvasGroup fadePanel;
+
+    [Header("World")]
+    public GameObject gameWorld;
+    public GameObject miniWorld;
+    public GameObject miniGameWorld;
 
     //bossHealthBar
     Image healthBarImg;
@@ -74,6 +85,9 @@ public class GameManager : MonoBehaviour
     public Image playerHealthImg;
     Animator playerHealthAnim;
     bool isShaking;
+
+    // fade
+    bool isFade;
 
     void Awake()
     {
@@ -154,7 +168,7 @@ public class GameManager : MonoBehaviour
         stage++;
     }
 
-    public void MiniGameStart()
+    void MiniGameStart()
     {
         isMiniGame = true;
 
@@ -163,8 +177,19 @@ public class GameManager : MonoBehaviour
         startZone.SetActive(false);
         miniGameZone.SetActive(false);
 
+        player.gameObject.SetActive(false);
+        gameCam.SetActive(false);
+        miniCam.SetActive(false);
+        gamePanel.SetActive(false);
+        miniWorld.SetActive(false);
+        gameWorld.SetActive(false);
+
+        miniGameCam.SetActive(true);
+        miniGameWorld.SetActive(true);
+        miniGamePanel.SetActive(true);
+
         foreach (Transform zone in enemyZones)
-            zone.gameObject.SetActive(true);
+            zone.gameObject.SetActive(false);
     }
 
     public void MiniGameEnd()
@@ -176,10 +201,21 @@ public class GameManager : MonoBehaviour
         startZone.SetActive(true);
         miniGameZone.SetActive(true);
 
+        player.gameObject.SetActive(true);
+        gameCam.SetActive(true);
+        miniCam.SetActive(true);
+        gamePanel.SetActive(true);
+        miniWorld.SetActive(true);
+        gameWorld.SetActive(true);
+
+        miniGameCam.SetActive(false);
+        miniGameWorld.SetActive(false);
+        miniGamePanel.SetActive(false);
+
         foreach (Transform zone in enemyZones)
             zone.gameObject.SetActive(false);
 
-        isBattle = false;
+        isMiniGame = false;
     }
 
     IEnumerator InBattle()
@@ -248,7 +284,7 @@ public class GameManager : MonoBehaviour
     void LateUpdate()
     {
         scoreTxt.text = string.Format("{0:n0}", player.score);
-        stageTxt.text = "STAGE" + stage;
+        stageTxt.text = "STAGE " + stage;
 
         int hour = (int)(playTime / 3600);
         int min = (int)((playTime - (hour * 3600)) / 60);
@@ -333,7 +369,7 @@ public class GameManager : MonoBehaviour
             playerHealthAnim.SetBool("isShaking", false);
             isShaking = false;
         }
-            
+
     }
 
     //IEnumerator Twinking()
@@ -349,4 +385,54 @@ public class GameManager : MonoBehaviour
     //        yield return new WaitForSeconds(0.3f);
     //    }
     //}
+
+    public void MiniGameTrigger()
+    {
+        StartCoroutine(FadeOut());
+    }
+
+    IEnumerator FadeOut()
+    {
+        fadePanel.blocksRaycasts = true;
+
+        float fadeTime = 1f;
+        float time = 0;
+        while (time <= fadeTime)
+        {
+            time += Time.deltaTime;
+            float alpha = Mathf.Lerp(0f, 1f, time / fadeTime);
+            fadePanel.alpha = alpha;
+            yield return null;
+        }
+        fadePanel.alpha = 1f;
+        
+        if (!isMiniGame)
+            MiniGameStart();
+        else
+            MiniGameEnd();
+
+        isFade = true;
+        StartCoroutine(FadeIn());
+    }
+
+    IEnumerator FadeIn()
+    {
+        float fadeTime = 2f;
+        float time = 0;
+        while (time <= fadeTime)
+        {
+            time += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, time / fadeTime);
+            fadePanel.alpha = alpha;
+            yield return null;
+        }
+        fadePanel.alpha = 0f;
+        fadePanel.blocksRaycasts = false;
+        isFade = false;
+    }
+
+    public void MiniGameReward()
+    {
+        player.coin += 10000;
+    }
 }

@@ -35,6 +35,28 @@ public class cSpawn : MonoBehaviour
         }
     }
 
+    public void RemoveAll()
+    {
+        for (int i = 0; i < playerNormal.Count; i++)
+        {
+            Destroy(playerNormal[i]);
+        }
+
+        for (int i = 0; i < playerRare.Count; i++)
+        {
+            Destroy(playerRare[i]);
+        }
+
+        for (int i = 0; i < playerLegend.Count; i++)
+        {
+            Destroy(playerLegend[i]);
+        }   
+
+        playerNormal.Clear();
+        playerRare.Clear();
+        playerLegend.Clear();
+    }
+
     public void RemoveNormal()
     {
         int lastIndex = playerNormal.Count - 1;
@@ -67,7 +89,7 @@ public class cSpawn : MonoBehaviour
     void InstantePlayer()
     {
         int playerIndex = Choose(playerProbs);
-        GameObject playerInstante = Instantiate(players[playerIndex], transform.position + 
+        GameObject playerInstante = Instantiate(players[playerIndex], transform.position +
                                         new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), transform.rotation);
         PlayerClassification(playerIndex, playerInstante);
     }
