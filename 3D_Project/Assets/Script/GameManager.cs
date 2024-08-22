@@ -91,6 +91,30 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        Initialize();
+    }
+
+    void Update()
+    {
+        if (isBattle)
+            playTime += Time.deltaTime;
+    }
+
+    void LateUpdate()
+    {
+        UIScoreTxtUpdate();
+
+        UITimeUpdate();
+
+        UIPlayerStatusUpdate();
+
+        UIPlayerWeaponUpdate();
+
+        UIBossHealthUpdate();
+    }
+
+    void Initialize()
+    {
         //int maxScore = PlayerPrefs.GetInt("MaxScore");
         //string maxScoreStr = maxScore.ToString();
         //maxScoreTxt.text = maxScoreStr;
@@ -105,6 +129,8 @@ public class GameManager : MonoBehaviour
         healthBarAnim = bossHealthBar.GetComponent<Animator>();
         playerHealthAnim = playerHealthImg.gameObject.GetComponent<Animator>();
     }
+
+    #region StageManagerMethod
 
     public void GameStart()
     {
@@ -274,26 +300,42 @@ public class GameManager : MonoBehaviour
         StageEnd();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void MiniGameReward()
     {
-        if (isBattle)
-            playTime += Time.deltaTime;
+        player.coin += 10000;
     }
 
-    void LateUpdate()
+    public void MiniGameTrigger()
+    {
+        StartCoroutine(FadeOut());
+    }
+
+    #endregion
+
+    #region UIUpdate
+
+    void UIScoreTxtUpdate()
     {
         scoreTxt.text = string.Format("{0:n0}", player.score);
         stageTxt.text = "STAGE " + stage;
+    }
 
+    void UITimeUpdate()
+    {
         int hour = (int)(playTime / 3600);
         int min = (int)((playTime - (hour * 3600)) / 60);
         int sec = (int)(playTime % 60);
         playerTimeTxt.text = string.Format("{0:00}", hour) + "/" + string.Format("{0:00}", min) + "/" + string.Format("{0:00}", sec);
+    }
 
+    void UIPlayerStatusUpdate()
+    {
         playerHealthTxt.text = player.health + "/" + player.maxHealth;
         playerCoinTxt.text = string.Format("{0:n0}", player.coin);
+    }
 
+    void UIPlayerWeaponUpdate()
+    {
         if (!player.curWeapon)
             playerAmmoTxt.text = "-/" + player.ammo;
         else if (player.curWeapon.type == cWeapon.Type.MELEE)
@@ -320,11 +362,17 @@ public class GameManager : MonoBehaviour
             weapon4Img.color = new Color(1f, 1f, 1f, 1f);
         else
             weapon4Img.color = new Color(1f, 1f, 1f, 0f);
+    }
 
+    void UIEnemeyCountUpdate()
+    {
         enemyTxtA.text = enemyCountA.ToString();
         enemyTxtB.text = enemyCountB.ToString();
         enemyTxtC.text = enemyCountC.ToString();
+    }
 
+    void UIBossHealthUpdate()
+    {
         if (boss != null)
         {
             bossHealthGroup.anchoredPosition = Vector3.down * 30f;
@@ -369,7 +417,6 @@ public class GameManager : MonoBehaviour
             playerHealthAnim.SetBool("isShaking", false);
             isShaking = false;
         }
-
     }
 
     //IEnumerator Twinking()
@@ -386,11 +433,6 @@ public class GameManager : MonoBehaviour
     //    }
     //}
 
-    public void MiniGameTrigger()
-    {
-        StartCoroutine(FadeOut());
-    }
-
     IEnumerator FadeOut()
     {
         fadePanel.blocksRaycasts = true;
@@ -405,7 +447,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         fadePanel.alpha = 1f;
-        
+
         if (!isMiniGame)
             MiniGameStart();
         else
@@ -431,8 +473,6 @@ public class GameManager : MonoBehaviour
         isFade = false;
     }
 
-    public void MiniGameReward()
-    {
-        player.coin += 10000;
-    }
+    #endregion
+
 }
