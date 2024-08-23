@@ -99,8 +99,7 @@ public abstract class cEnemy : MonoBehaviour
         {
             cWeapon weapon = other.GetComponent<cWeapon>();
             curHealth -= weapon.damage;
-
-            Vector3 hitDir = KnockBack(other);
+                        Vector3 hitDir = KnockBack(other);
 
             StartCoroutine(Hit(hitDir));
 

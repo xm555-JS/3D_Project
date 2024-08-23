@@ -9,7 +9,7 @@ public class cSpawnMonster : MonoBehaviour
 
     GameObject boss;
     int bossMaxHealth;
-    int bossCurHealth = 1000;
+    int bossCurHealth;
 
     int enemyCount;
 
@@ -70,6 +70,7 @@ public class cSpawnMonster : MonoBehaviour
         {
             boss = Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
             bossMaxHealth = boss.GetComponent<cMini_Enemy>().GetMaxHealth();
+            bossCurHealth = bossMaxHealth;
         }
 
         float time = 0;
@@ -103,7 +104,7 @@ public class cSpawnMonster : MonoBehaviour
 
     public bool CheckGameOver()
     {
-        if (enemyCount >= 20)
+        if (enemyCount >= 60)
             isGameOver = true;
 
         return isGameOver;

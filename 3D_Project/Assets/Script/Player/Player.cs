@@ -278,9 +278,11 @@ public class Player : MonoBehaviour
         // rigidybody를 이용한 플레이어 이동
         // Rigidbody를 이용하여 플레이어를 움직이게 바꿈
         // FixedUpdate에서 처리함으로 같은 프레임률에서 충돌을 처리할 수 있어 안전하게 물리 상호작용이 가능
+        const float walkSpeed = 0.3f;
+        const float normalSpeed = 1f;
         if (!isBorder)
         {
-            inputVec = moveDir * speed * (isDown ? 0.3f : 1f) * Time.deltaTime;
+            inputVec = moveDir * speed * (isDown ? walkSpeed : normalSpeed) * Time.deltaTime;
             rigid.MovePosition(rigid.position + inputVec);
         }
     }

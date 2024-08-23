@@ -17404,21 +17404,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1970534073}
-        m_TargetAssemblyTypeName: cSpawn, Assembly-CSharp
-        m_MethodName: DrawPlayerFive
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1884477861}
         m_TargetAssemblyTypeName: MiniGameManager, Assembly-CSharp
-        m_MethodName: UseCoin
+        m_MethodName: PlayerDrawFive
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18497,21 +18485,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1970534073}
-        m_TargetAssemblyTypeName: cSpawn, Assembly-CSharp
-        m_MethodName: DrawPlayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1884477861}
         m_TargetAssemblyTypeName: MiniGameManager, Assembly-CSharp
-        m_MethodName: UseCoin
+        m_MethodName: PlayerDraw
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -50506,7 +50482,7 @@ MonoBehaviour:
   playerSpawn: {fileID: 1970534073}
   coinTxt: {fileID: 272361747}
   stateTxt: {fileID: 2130860155}
-  stageNum: 1
+  stageNum: 4
   timerImg: {fileID: 970697769}
   timerTxt: {fileID: 950300179}
   timer: 0
@@ -51456,7 +51432,7 @@ MonoBehaviour:
   playerProbs:
   - 7
   - 2
-  - 50
+  - 1
 --- !u!4 &1970534074
 Transform:
   m_ObjectHideFlags: 0

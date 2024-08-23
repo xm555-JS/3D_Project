@@ -64,7 +64,6 @@ public class cSpawn : MonoBehaviour
             return;
         Destroy(playerNormal[lastIndex]);
         playerNormal.RemoveAt(lastIndex);
-
     }
 
     public void RemoveRare()
@@ -74,7 +73,6 @@ public class cSpawn : MonoBehaviour
             return;
         Destroy(playerRare[lastIndex]);
         playerRare.RemoveAt(lastIndex);
-
     }
 
     public void RemoveLegend()

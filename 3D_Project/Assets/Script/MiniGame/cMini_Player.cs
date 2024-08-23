@@ -108,8 +108,8 @@ public class cMini_Player : MonoBehaviour
             anim.SetBool("isRun", false);
         }
 
-        float posX = Mathf.Clamp(transform.position.x, -32.5f, 32.5f);
-        float posZ = Mathf.Clamp(transform.position.z, -32.5f, 32.5f);
+        float posX = Mathf.Clamp(transform.position.x, -24f, 24f);
+        float posZ = Mathf.Clamp(transform.position.z, -24f, 24f);
         transform.position = new Vector3(posX, transform.position.y, posZ);
     }
 

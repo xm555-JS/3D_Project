@@ -9,7 +9,6 @@ public class cMini_Enemy : MonoBehaviour
     [SerializeField] int curHealth;
     [SerializeField] float speed;
     bool isDead;
-    public static int enemyCount;
 
     MeshRenderer[] materials;
     List<MeshRenderer> materialList = new List<MeshRenderer>();
@@ -80,7 +79,6 @@ public class cMini_Enemy : MonoBehaviour
 
             gameObject.layer = 12;
             isDead = true;
-            enemyCount--;
             anim.SetTrigger("doDie");
             OnEnemyDeath?.Invoke(this);
             Destroy(gameObject, 3f);

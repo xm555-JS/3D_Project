@@ -250,13 +250,23 @@ public class MiniGameManager : MonoBehaviour
 
     #region PublicMethod
 
-    // 코인 관련
+    // 플레이어 가챠 관련
     public void GetCoin(int getCoin) { coin += getCoin; }
-    public void UseCoin(int useCoin)
+    public void PlayerDraw(int useCoin)
     {
         if (useCoin > coin)
             return;
 
+        playerSpawn.DrawPlayer();
+        coin -= useCoin;
+    }
+
+    public void PlayerDrawFive(int useCoin)
+    {
+        if (useCoin > coin)
+            return;
+
+        playerSpawn.DrawPlayerFive();
         coin -= useCoin;
     }
 
@@ -299,6 +309,7 @@ public class MiniGameManager : MonoBehaviour
 
         stageNum = 0;
         timer = 0f;
+        rate = 1f;
         if (isEnd)
             isEnd = false;
     }

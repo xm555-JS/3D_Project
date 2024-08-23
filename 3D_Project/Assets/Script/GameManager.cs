@@ -459,7 +459,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator FadeIn()
     {
-        float fadeTime = 2f;
+        float fadeTime = 1f;
         float time = 0;
         while (time <= fadeTime)
         {
