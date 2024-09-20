@@ -50482,7 +50482,7 @@ MonoBehaviour:
   playerSpawn: {fileID: 1970534073}
   coinTxt: {fileID: 272361747}
   stateTxt: {fileID: 2130860155}
-  stageNum: 4
+  stageNum: 1
   timerImg: {fileID: 970697769}
   timerTxt: {fileID: 950300179}
   timer: 0

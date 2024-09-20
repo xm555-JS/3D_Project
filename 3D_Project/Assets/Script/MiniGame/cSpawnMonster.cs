@@ -7,6 +7,8 @@ public class cSpawnMonster : MonoBehaviour
 {
     [SerializeField] GameObject[] enemys;
 
+    cObjectPool _pool;
+
     GameObject boss;
     int bossMaxHealth;
     int bossCurHealth;
@@ -24,6 +26,11 @@ public class cSpawnMonster : MonoBehaviour
     public int GetBossCurHealth() { return bossCurHealth; }
 
     public event Action<cSpawnMonster> OnGetCoin;
+
+    void Start()
+    {
+        _pool = gameObject.AddComponent<cObjectPool>();
+    }
 
     void OnEnable()
     {
@@ -79,7 +86,11 @@ public class cSpawnMonster : MonoBehaviour
             time += Time.deltaTime;
             if (time >= instateTime)
             {
-                Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
+                //Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
+                GameObject enemy = _pool.Spawn();
+                //enemy.transform.SetParent(this.transform);
+                enemy.transform.position = this.transform.position;
+                enemy.transform.rotation = this.transform.rotation;
                 enemyCount++;
                 Debug.Log(enemyCount);
                 time = 0f;

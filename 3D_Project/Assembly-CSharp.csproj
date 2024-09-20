@@ -71,6 +71,9 @@
     <Compile Include="Assets\Script\MiniGame\MiniGameManager.cs" />
     <Compile Include="Assets\Script\MiniGame\cSpawnMonster.cs" />
     <Compile Include="Assets\Script\Boss\cBossMissile.cs" />
+    <Compile Include="Assets\Script\MiniGame\UI\cCoin.cs" />
+    <Compile Include="Assets\Script\MiniGame\UI\cStage.cs" />
+    <Compile Include="Assets\Script\MiniGame\UI\cTimerImg.cs" />
     <Compile Include="Assets\Script\Enemy\cEnemyA.cs" />
     <Compile Include="Assets\Script\MiniGame\cMini_Enemy.cs" />
     <Compile Include="Assets\Script\cCamera.cs" />
@@ -82,9 +85,11 @@
     <Compile Include="Assets\Script\cWeapon.cs" />
     <Compile Include="Assets\Script\Boss\cBoss.cs" />
     <Compile Include="Assets\Script\cItem.cs" />
+    <Compile Include="Assets\Script\MiniGame\UI\cTimer.cs" />
     <Compile Include="Assets\Script\Enemy\cEnemyC.cs" />
     <Compile Include="Assets\Script\GameManager.cs" />
     <Compile Include="Assets\Script\cShop.cs" />
+    <Compile Include="Assets\Script\Component\cObjectPool.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

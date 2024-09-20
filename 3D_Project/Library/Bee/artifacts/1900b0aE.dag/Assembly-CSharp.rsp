@@ -353,6 +353,7 @@
 "Assets/Script/cBullet.cs"
 "Assets/Script/cCamera.cs"
 "Assets/Script/cItem.cs"
+"Assets/Script/Component/cObjectPool.cs"
 "Assets/Script/cShop.cs"
 "Assets/Script/cStartZone.cs"
 "Assets/Script/cWeapon.cs"
@@ -372,6 +373,10 @@
 "Assets/Script/MiniGame/cSpawn.cs"
 "Assets/Script/MiniGame/cSpawnMonster.cs"
 "Assets/Script/MiniGame/MiniGameManager.cs"
+"Assets/Script/MiniGame/UI/cCoin.cs"
+"Assets/Script/MiniGame/UI/cStage.cs"
+"Assets/Script/MiniGame/UI/cTimer.cs"
+"Assets/Script/MiniGame/UI/cTimerImg.cs"
 "Assets/Script/Player/Player.cs"
 -langversion:9.0
 

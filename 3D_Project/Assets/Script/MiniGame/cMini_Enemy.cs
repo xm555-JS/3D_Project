@@ -2,13 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Pool;
+
 public class cMini_Enemy : MonoBehaviour
 {
     [Header("[Info]")]
     [SerializeField] int maxHealth;
-    [SerializeField] int curHealth;
     [SerializeField] float speed;
+    int curHealth;
     bool isDead;
+
+    public IObjectPool<GameObject> Pool { get; set; }
 
     MeshRenderer[] materials;
     List<MeshRenderer> materialList = new List<MeshRenderer>();
@@ -21,6 +25,8 @@ public class cMini_Enemy : MonoBehaviour
 
     void Awake()
     {
+        curHealth = maxHealth;
+
         anim = GetComponentInChildren<Animator>();
 
         materials = GetComponentsInChildren<MeshRenderer>();
@@ -31,6 +37,11 @@ public class cMini_Enemy : MonoBehaviour
 
             materialList.Add(material);
         }
+    }
+
+    void OnDisable()
+    {
+        ResetEnemy();
     }
 
     void Update()
@@ -53,8 +64,8 @@ public class cMini_Enemy : MonoBehaviour
 
             StartCoroutine(Hit());
 
-            if (!bullet.isMelee)
-                Destroy(other.gameObject);
+            //if (!bullet.isMelee)
+            //    ReturnToPool();
         }
     }
 
@@ -81,7 +92,27 @@ public class cMini_Enemy : MonoBehaviour
             isDead = true;
             anim.SetTrigger("doDie");
             OnEnemyDeath?.Invoke(this);
-            Destroy(gameObject, 3f);
+            //ReturnToPool();//Destroy(gameObject, 3f);
+            Invoke("ReturnToPool", 3f);
         }
+    }
+
+    void ReturnToPool()
+    {
+        Pool.Release(this.gameObject);
+    }
+
+    void ResetEnemy()
+    {
+        // hp
+        curHealth = maxHealth;
+        // layer
+        gameObject.layer = 11;
+        // color
+        foreach (MeshRenderer mesh in materialList)
+            mesh.material.color = Color.white;
+        // isDead
+        isDead = false;
+        // animation?
     }
 }
