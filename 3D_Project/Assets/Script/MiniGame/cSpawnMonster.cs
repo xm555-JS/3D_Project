@@ -30,6 +30,19 @@ public class cSpawnMonster : MonoBehaviour
     void Start()
     {
         _pool = gameObject.AddComponent<cObjectPool>();
+
+        //List<GameObject> enemyList = new List<GameObject>();
+        //for (int i = 0; i < _pool.maxPoolSize; i++)
+        //{
+        //    GameObject enemy = _pool.Spawn();
+        //    enemyList.Add(enemy);
+        //}
+
+        //foreach (var listEnemy in enemyList)
+        //{
+        //    cMini_Enemy miniEnemy = listEnemy.GetComponent<cMini_Enemy>();
+        //    miniEnemy.Pool.Release(listEnemy);
+        //}
     }
 
     void OnEnable()
@@ -86,9 +99,7 @@ public class cSpawnMonster : MonoBehaviour
             time += Time.deltaTime;
             if (time >= instateTime)
             {
-                //Instantiate(enemys[stageNum - 1], transform.position, transform.rotation);
-                GameObject enemy = _pool.Spawn();
-                //enemy.transform.SetParent(this.transform);
+                GameObject enemy = _pool.Spawn(stageNum);
                 enemy.transform.position = this.transform.position;
                 enemy.transform.rotation = this.transform.rotation;
                 enemyCount++;
