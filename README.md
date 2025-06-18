@@ -7,10 +7,9 @@
 - [시연 영상 보기](https://www.youtube.com/watch?v=lEtp1jFFYys)
 
 ## 주요 기능
-- 주요 기능
-    - 몬스터 클래스 상속 : 상속 구조로 설계하여 공통 기능을 재사용하도록 구현
-    - 미니맵 : MimiMap을 위한 별도의 Layer와 Target Texture를 이용하여 MimiMap 구현
-    - 랜덤 유닛 뽑기 : 확률적으로 3가지 등급의 유닛을 뽑을 수 있으며, List를 이용하여 유닛 복제 및 삭제 구현.
+- 몬스터 클래스 상속 : 상속 구조로 설계하여 공통 기능을 재사용하도록 구현
+- 미니맵 : MimiMap을 위한 별도의 Layer와 Target Texture를 이용하여 MimiMap 구현
+- 랜덤 유닛 뽑기 : 확률적으로 3가지 등급의 유닛을 뽑을 수 있으며, List를 이용하여 유닛 복제 및 삭제 구현.
       
 ## 사용 기술
 - Unity 2021.3.32f1 (3D)
